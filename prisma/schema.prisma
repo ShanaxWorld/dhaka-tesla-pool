@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PASSENGER
+  DRIVER
+}
+
+enum Area {
+  BANANI
+  GULSHAN_1
+  GULSHAN_2
+  MOHAKHALI
+  DHANMONDI
+  MIRPUR
+  UTTARA
+  FARMGATE
+  BASHUNDHARA
+}
+
+enum RideStatus {
+  REQUESTED
+  MATCHED
+  DRIVER_ARRIVED
+  STARTED
+  COMPLETED
+  CANCELLED
+}
+
+enum PoolStatus {
+  OPEN
+  ACCEPTED
+  DRIVER_ARRIVED
+  STARTED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  TESLAPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         Role          @default(PASSENGER)
+  tesla        Tesla?
+  rideRequests RideRequest[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Tesla {
+  id          String   @id @default(cuid())
+  name        String
+  capacity    Int      @default(3)
+  isOnline    Boolean  @default(false)
+  currentArea Area?
+  driver      User     @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  driverId    String   @unique
+  pools       Pool[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Pool {
+  id          String        @id @default(cuid())
+  tesla       Tesla         @relation(fields: [teslaId], references: [id])
+  teslaId     String
+  pickupArea  Area
+  status      PoolStatus    @default(OPEN)
+  seatsUsed   Int           @default(0)
+  members     RideRequest[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  arrivedAt   DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  @@index([status])
+  @@index([pickupArea])
+}
+
+model RideRequest {
+  id             String        @id @default(cuid())
+  passenger      User          @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+  passengerId    String
+  pickupArea     Area
+  dropoffArea    Area
+  seats          Int           @default(1)
+  status         RideStatus    @default(REQUESTED)
+  pool           Pool?         @relation(fields: [poolId], references: [id])
+  poolId         String?
+
+  // fare stored in paisa (integer) — see README for why not float/decimal
+  baseFare       Int           @default(0)
+  distanceCharge Int           @default(0)
+  poolDiscount   Int           @default(0)
+  totalFare      Int           @default(0)
+
+  paymentMethod  PaymentMethod @default(CASH)
+  paymentStatus  PaymentStatus @default(PENDING)
+
+  events         RideEvent[]
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  matchedAt      DateTime?
+  cancelledAt    DateTime?
+  completedAt    DateTime?
+
+  @@index([status])
+  @@index([passengerId])
+  @@index([poolId])
+}
+
+model RideEvent {
+  id            String       @id @default(cuid())
+  rideRequest   RideRequest  @relation(fields: [rideRequestId], references: [id], onDelete: Cascade)
+  rideRequestId String
+  fromStatus    RideStatus?
+  toStatus      RideStatus
+  note          String?
+  createdAt     DateTime     @default(now())
+
+  @@index([rideRequestId])
+}
