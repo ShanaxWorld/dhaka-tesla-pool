@@ -17,5 +17,20 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    build: .
+    container_name: tesla-pool-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://tesla:teslapass@db:5432/teslapool?schema=public"
+      JWT_SECRET: "docker-demo-secret-change-in-real-deploy"
+      NODE_ENV: "production"
+    ports:
+      - "3000:3000"
+    command: sh -c "npx prisma migrate deploy && (npx prisma db seed || echo 'Seed skipped') && node server.js"
+
 volumes:
   pgdata:
