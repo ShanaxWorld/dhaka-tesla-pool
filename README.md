@@ -44,13 +44,13 @@ Three actors:
 
 ```mermaid
 flowchart TD
-    Browser["Browser<br/>(Passenger / Driver UI)"]
+    Browser["Browser (Passenger / Driver UI)"]
     subgraph NextApp["Next.js App (single deployable unit)"]
-        UI["React Server + Client Components<br/>Tailwind CSS"]
-        API["Route Handlers<br/>(Node.js API layer)"]
-        Logic["Service layer<br/>auth · matching · fare · capacity · lifecycle"]
+        UI["React Components + Tailwind CSS"]
+        API["Route Handlers (Node.js API layer)"]
+        Logic["Service layer: auth, matching, fare, capacity, lifecycle"]
     end
-    DB[("PostgreSQL<br/>via Prisma ORM")]
+    DB[("PostgreSQL via Prisma ORM")]
 
     Browser -->|HTTP| UI
     UI -->|fetch /api| API
@@ -73,16 +73,16 @@ flowchart TD
 
 ```mermaid
 erDiagram
-    User ||--o| Tesla : "owns (driver)"
-    User ||--o{ RideRequest : "requests (passenger)"
+    User ||--o| Tesla : owns
+    User ||--o{ RideRequest : requests
     Tesla ||--o{ Pool : hosts
-    Pool ||--o{ RideRequest : "contains (members)"
+    Pool ||--o{ RideRequest : contains
     RideRequest ||--o{ RideEvent : logs
 
     User {
         string id PK
         string name
-        string email UK
+        string email
         string passwordHash
         Role role
         datetime createdAt
@@ -94,7 +94,7 @@ erDiagram
         int capacity
         boolean isOnline
         Area currentArea
-        string driverId FK "unique"
+        string driverId FK
     }
     Pool {
         string id PK
