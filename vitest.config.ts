@@ -6,5 +6,6 @@ export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     environment: "node",
+    fileParallelism: false, // integration tests share one Postgres — don't overlap
   },
 });
