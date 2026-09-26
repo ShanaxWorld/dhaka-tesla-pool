@@ -1,3 +1,4 @@
+// src/app/api/auth/signup/route.ts
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
@@ -25,8 +26,19 @@ export async function POST(request: Request) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
+  const finalRole = role ?? "PASSENGER";
+
   const user = await prisma.user.create({
-    data: { name, email, passwordHash, role: role ?? "PASSENGER" },
+    data: {
+      name,
+      email,
+      passwordHash,
+      role: finalRole,
+      // A driver owns exactly one Tesla — provision a default 3-seater on signup.
+      ...(finalRole === "DRIVER"
+        ? { tesla: { create: { name: name + "'s Tesla", capacity: 3 } } }
+        : {}),
+    },
     select: { id: true, name: true, email: true, role: true },
   });
 
