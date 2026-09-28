@@ -6,7 +6,7 @@ A ride-pooling MVP where passengers share a three-seat electric "Tesla", split t
 
 - **Live app:** https://dhaka-tesla-pool-nine.vercel.app/
 - **Repository:** https://github.com/ShanaxWorld/dhaka-tesla-pool
-- **Demo video (6 min):** _[ADD VIDEO LINK HERE]_
+- **Demo video (6 min):** https://drive.google.com/file/d/1DvwfqKzOZrBFEyT68A3Fd4c3nJsMww7M/view?usp=sharing
 
 ---
 
