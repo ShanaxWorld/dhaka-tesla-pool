@@ -409,6 +409,4 @@ I used Claude as a pair-programming assistant throughout: scaffolding, boilerpla
 - **Rejected / corrected:** the assistant initially stated Nusrat's and Rafiq's pooled fares were equal (৳56 each). Running the code showed ৳72 and ৳56 — the fares *should* differ, because each passenger pays for their own trip distance. I corrected the documented numbers to match the real corridor logic; the difference is a feature (individual fares), not a bug.
 - **Owned end-to-end:** the AI-suggested Docker and Vercel configuration didn't work first try. I debugged the container entrypoint, a YAML/encoding issue, the Prisma-CLI-in-container error, and several deployment errors myself, and shipped the working live app.
 
----
 
-_Built for the RoBenDevs Dhaka Tesla Pool challenge. In Dhaka, your Tesla may have three wheels — but the engineering is production-minded._
